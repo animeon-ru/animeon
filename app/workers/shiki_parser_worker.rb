@@ -8,7 +8,7 @@ class ShikiParserWorker
   def perform(*args)
     target_anime = Animeon::Application.redis.get('anime_key').to_i
     check_next(target_anime)
-    client = Shikimori::API::Client.new
+    client = Animeon::Application.shiki_api
     anime = client.v1.anime(target_anime).to_hash
     anime['age_rating'] = anime['rating']
     anime['user_rating'] = anime['score']

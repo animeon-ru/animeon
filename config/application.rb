@@ -29,6 +29,9 @@ module Animeon
       # This reports stats per request like HTTP status and timings
       Rails.application.middleware.unshift PrometheusExporter::Middleware
     end
+    def shiki_api
+      Shikimori::API::Client.new('https://shiki.one/')
+    end
     def redis
       Rails.application.config.redis
     end

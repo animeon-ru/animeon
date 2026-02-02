@@ -8,7 +8,7 @@ class OngoingParserWorker
     target_anime.update(updated_at: Time.now)
     return if target_anime.nil?
 
-    client = Shikimori::API::Client.new
+    client = Animeon::Application.shiki_api
     anime = client.v1.anime(target_anime.shiki_id).to_hash
     anime['age_rating'] = anime['rating']
     anime['user_rating'] = anime['score']
