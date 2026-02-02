@@ -201,7 +201,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_01_24_184842) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "priority", default: 0, null: false
-    t.datetime "cached_at", default: "2025-08-24 20:42:45", null: false
+    t.datetime "cached_at", default: "2026-02-02 08:16:21", null: false
     t.index ["video_id"], name: "index_video_urls_on_video_id"
   end
 
