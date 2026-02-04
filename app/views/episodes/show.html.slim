@@ -1,5 +1,10 @@
 = link_to anime_path(@episode.anime)
-  h2 #{@episode.anime.russian} / #{@episode.anime.name} - Серия #{@episode.episode_number}
+  h2 [
+    class="anime-name"
+    anime_id="#{@episode.anime.id}"
+    user_rate_id="#{user_signed_in? ? @user_rate.id : 0}"
+    episode_number="#{@episode.episode_number}"
+  ] #{@episode.anime.russian} / #{@episode.anime.name} - Серия #{@episode.episode_number}
 .video_block
   h4 Выберите озвучку:
   .video_choose
@@ -16,6 +21,7 @@
     function PlayerjsEvents(event, id, info) {
         if (event === "quartile") {
             if (info === '50%') {
+                let target_id = $('.anime-name').attr('user_rate_id')
                 $.ajax({
                     url: '/api/videos/' + id + '/increase_views',
                     type: 'GET',
@@ -24,6 +30,16 @@
                     contentType: false,
                     headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')}
                 })
+                if (target_id !== '0') {
+                    fetch('/api/user_rates/' + target_id, {
+                        method: 'PATCH',
+                        headers: {
+                            "Content-Type": "application/json",
+                            'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        body: JSON.stringify({episodes: parseInt($('.anime-name').attr('episode_number'))})
+                    })
+                }
             }
         }
     }
@@ -33,7 +49,7 @@
   - else
     = link_to 'Предыдущая серия', nil, class: "btn btn-outline-danger ep"
   - if @episode.episode_number < @episode.max_episode
-    = link_to 'Следующая серия', anime_episode_path(id: @episode.next_episode.id, watched: @episode.episode_number), class: "btn btn-outline-success ep"
+    = link_to 'Следующая серия', anime_episode_path(id: @episode.next_episode.id), class: "btn btn-outline-success ep"
   - else
     = link_to 'Просмотренно', anime_episode_path(id: @episode.id, watched: @episode.episode_number), class: "btn btn-outline-success ep"
   - if user_signed_in? && (current_user.role == 'admin' || current_user.role == 'uploader')

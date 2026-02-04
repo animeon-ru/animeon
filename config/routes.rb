@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   apipie
   namespace :api, defaults: { format: 'json' } do
     scope module: :v1 do
+      resources :user_rates, only: [:update]
       resources :animes, only: [:index] do
         collection do
           get :search

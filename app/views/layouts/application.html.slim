@@ -22,7 +22,10 @@ html
     = javascript_pack_tag :application, data: { 'turbolinks-track' => 'reload' }
     script src="https://code.jquery.com/jquery-3.7.1.min.js"
     script src="/playerjs.js"
-  body class="#{controller_classes}"
+  body[
+    class="#{controller_classes}"
+    user_id="#{user_signed_in? ? user_id = current_user.id : 0}"
+  ]
     .navbar
       .nav-items
         .nav-item
