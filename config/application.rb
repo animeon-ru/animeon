@@ -8,6 +8,7 @@ require 'aws-sdk-core'
 Bundler.require(*Rails.groups)
 
 module Animeon
+  SHIKI_URL="https://shiki.one"
   DOMAINS = {
     production: 'animeon.ru',
     development: 'animeon.ru',
@@ -30,7 +31,7 @@ module Animeon
       Rails.application.middleware.unshift PrometheusExporter::Middleware
     end
     def shiki_api
-      Shikimori::API::Client.new('https://shiki.one/')
+      Shikimori::API::Client.new(Animeon::SHIKI_URL)
     end
     def redis
       Rails.application.config.redis

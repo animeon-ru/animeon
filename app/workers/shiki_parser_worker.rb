@@ -24,7 +24,7 @@ class ShikiParserWorker
     if Anime.find_by(shiki_id: target_anime.to_i).nil?
       img_url = if anime['image']['original'] != '/assets/globals/missing_original.jpg'
                   Paperclip.io_adapters.for(
-                    URI.parse("https://shikimori.one#{anime['image']['original']}").to_s,
+                    URI.parse("#{Animeon::SHIKI_URL}#{anime['image']['original']}").to_s,
                     { hash_digest: Digest::MD5 }
                   )
                 else
