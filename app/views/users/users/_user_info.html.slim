@@ -1,0 +1,86 @@
+.profile-page
+  aside.profile-aside
+    .card.profile-card
+      .profile-head
+        img.avatar src="#{@user.avatar.url || '/default_avatar.jpg'}" alt="avatar"
+        .who
+          .nick
+            = @user.username
+          .role
+            = @user.role
+      .stats
+        .stat
+          .num
+            | 1
+            //= @stats[:watching]
+          .lbl
+            | Смотрю
+        .stat
+          .num
+            |1
+            //= @stats[:planned]
+          .lbl
+            | В планах
+        .stat
+          .num
+            | 1
+            //= @stats[:completed]
+          .lbl
+            | Просмотрено
+        .stat
+          .num
+            | 1
+            //= @stats[:dropped]
+          .lbl
+            | Брошено
+      .profile-actions
+        a.btn.primary[href="/settings"]
+          | Настройки
+        = link_to 'Админ Панель', admin_index_path, class: 'btn'
+        a.btn[href="/profile/avatar"]
+          | Сменить аватар
+        = link_to "Выйти", destroy_user_session_path, class: 'btn danger'
+  main.profile-main
+    section.card
+      .section-title
+        h2
+          | Продолжить просмотр
+        a.link[href="/my/watching"]
+          | Открыть список
+      .continue-grid
+        - @watching.each do |item|
+          article.anime-row
+            = image_tag item.anime.poster_url, class: 'poster'
+          .meta
+            .title
+              = item.anime.russian
+            .sub
+              |  Эпизод:
+              b  #{item.episodes}
+              |   Прогресс: #{(item.episodes.to_f/item.anime.episodes.to_f*100).to_i}%
+            .progress
+              .bar style="width: #{(item.episodes.to_f/item.anime.episodes.to_f*100).to_i}%"
+            .row-actions
+              = link_to 'Продолжить просмотр', anime_episode_path(anime_id: item.anime.id,
+                      id: Episode.where(anime_id: item.anime.id,
+                      episode_number: item.episodes + 1).first.id), class: 'btn small primary'
+              = link_to 'Страница аниме', anime_path(item.anime.id), class: 'btn small'
+    section.card
+      .tabs
+        a.tab.active[href="#watching"]
+          | Смотрю
+        a.tab[href="#planned"]
+          | В планах
+        a.tab[href="#completed"]
+          | Просмотрено
+        a.tab[href="#favorites"]
+          | Любимое
+      .table
+        .thead
+          div
+            | Аниме
+          div
+            | Статус
+          div
+            | Прогресс
+          div
