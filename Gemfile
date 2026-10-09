@@ -13,6 +13,8 @@ gem 'devise', '~> 4.9'
 gem "enumerize", "~> 2.8.1"
 gem 'i18n'
 gem 'jbuilder'
+# json 3.x drops the quirks_mode option that ActiveSupport 7.1 passes to JSON.generate
+gem 'json', '< 3'
 gem 'jquery-rails'
 gem 'jr-paperclip', '8.0.0'
 gem 'non-stupid-digest-assets'
