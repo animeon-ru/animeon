@@ -207,6 +207,18 @@ $(document).on('turbolinks:load', () => {
     }
   })
 
+  $('.anime-form input[type="file"]').on('change', function (e) {
+    const file = e.currentTarget.files[0]
+    if (!file) return
+    const url = URL.createObjectURL(file)
+    $('#poster-preview-empty').remove()
+    let img = $('#poster-preview-img')
+    if (img.length === 0) {
+      img = $('<img id="poster-preview-img" alt="">').appendTo('.poster-preview')
+    }
+    img.attr('src', url)
+  })
+
   let input = $('.search-field');
   input.on('keyup', function (e){
     if (e.keyCode === 13) {

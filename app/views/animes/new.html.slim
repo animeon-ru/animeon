@@ -1,6 +1,4 @@
-h1.text-center Создать Аниме
-.row.justify-content-md-center
-  .col-6
-    = render 'form'
-    .btn.btn-outline-danger
-      = link_to 'Назад', animes_path
+.form-head
+  = link_to 'Каталог', animes_path, class: 'form-back'
+  h1 Новое аниме
+= render 'form'

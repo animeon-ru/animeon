@@ -31,7 +31,7 @@ class AnimesController < ApplicationController
 
   def edit
     @animes = Anime.find(params[:id])
-    @title = 'редактировать аниме'
+    @title = "Редактирование: #{@animes.russian.presence || @animes.name}"
   end
 
   def show

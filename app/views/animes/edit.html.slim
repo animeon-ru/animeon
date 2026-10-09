@@ -1,6 +1,4 @@
-h1.text-center Изменить аниме: #{@animes.russian}
-.row.justify-content-md-center
-  .col-6
-    = render 'form'
-    .btn.btn-outline-danger
-      = link_to 'Назад', anime_path(id: @animes.id)
+.form-head
+  = link_to @animes.russian.presence || @animes.name, anime_path(@animes), class: 'form-back'
+  h1 Редактирование
+= render 'form'

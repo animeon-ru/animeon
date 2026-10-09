@@ -1,29 +1,57 @@
-= simple_form_for @animes do |f|
-  = f.input :name
-  = f.input :russian
-  = f.input :status
-  = f.input :description
-  = f.input :episodes
-  = f.input :episodes_aired
-  = f.input :kind
-  = f.input :age_rating
-  = f.input :duration
-  = f.input :user_rating
-  = f.input :franchise
-  = f.input :shiki_id
-  = f.input :genres, collection: Genre.where(genre_type: 'anime'),
-          label_method: :russian,
-          multiple: true,
-          include_blank: false,
-          include_hidden: false,
-          input_html: { class: 'chosen-select' }
-  = f.input :studio_ids, collection: Studio.all,
-          label_method: :name,
-          multiple: true,
-          include_blank: false,
-          include_hidden: false,
-          input_html: { class: 'chosen-select' }
-  = f.input :poster, as: :file
-  = f.button :submit, class: 'btn btn-outline-primary'
+- editing = @animes.persisted?
+- moderated = editing && !user_signed_as_admin?
+= simple_form_for @animes, html: { class: 'anime-form' } do |f|
+  .anime-form-main
+    fieldset.form-group
+      legend Названия
+      .form-grid
+        = f.input :russian, wrapper_html: { class: 'span-2' }
+        = f.input :name, label: 'Оригинальное название', wrapper_html: { class: 'span-2' }
+        = f.input :description, input_html: { rows: 8 }, wrapper_html: { class: 'span-2' }
 
-// TODO add inputs
+    fieldset.form-group
+      legend Выпуск
+      .form-grid
+        = f.input :status
+        = f.input :kind
+        = f.input :episodes, label: 'Всего серий', input_html: { min: 0 }
+        = f.input :episodes_aired, input_html: { min: 0 }
+        = f.input :duration, label: 'Длительность серии, мин', input_html: { min: 0 }
+        = f.input :age_rating
+
+    fieldset.form-group
+      legend Классификация
+      .form-grid
+        = f.input :genres, collection: Genre.where(genre_type: 'anime').order(:russian),
+                label_method: :russian,
+                multiple: true,
+                include_blank: false,
+                include_hidden: false,
+                input_html: { class: 'chosen-select', data: { placeholder: 'Выберите жанры' } },
+                wrapper_html: { class: 'span-2' }
+        = f.input :studio_ids, collection: Studio.order(:name),
+                label_method: :name,
+                multiple: true,
+                include_blank: false,
+                include_hidden: false,
+                input_html: { class: 'chosen-select', data: { placeholder: 'Выберите студии' } },
+                wrapper_html: { class: 'span-2' }
+        = f.input :franchise, hint: 'Латиницей через подчёркивание, как на Шикимори'
+        = f.input :user_rating, input_html: { step: 0.01, min: 0, max: 10 }
+        = f.input :shiki_id
+
+  aside.anime-form-side
+    .poster-field
+      span.poster-label Постер
+      .poster-preview
+        - if @animes.poster_file_name.present?
+          = image_tag @animes.poster_url(:mini), alt: '', id: 'poster-preview-img'
+        - else
+          span.poster-empty#poster-preview-empty Постера нет
+      = f.input :poster, as: :file, label: 'Загрузить новый', input_html: { accept: 'image/*' }
+
+    .form-actions
+      - if moderated
+        p.moderation-note Изменения появятся на сайте после проверки модератором.
+      = f.button :submit, (editing ? (moderated ? 'Отправить на проверку' : 'Сохранить изменения') : 'Создать аниме'), class: 'btn-save'
+      = link_to 'Отмена', (editing ? anime_path(@animes) : animes_path), class: 'btn-cancel'
