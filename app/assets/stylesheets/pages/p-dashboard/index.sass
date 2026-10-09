@@ -1,9 +1,178 @@
+@import '../../vars'
 @import '../../mixins/text_info'
 @import '../../mixins/anime_card'
-@import '../../mixins/clear'
+@import '../../mixins/btn'
 
 .p-dashboard-index
   +text_info
   +anime_card
-  .ongoing_box, .animes_with_video_box, .news_box
-    +clear_left
+
+  .text_info h2
+    margin: 0
+    font-size: inherit
+
+  .section-link
+    color: $muted
+    font: 500 15px/1.4 $font-body
+    white-space: nowrap
+    &:hover
+      color: $subtitle
+
+  .home-section
+    margin-top: 64px
+
+  // ---------- hero ----------
+
+  .hero
+    display: grid
+    grid-template-columns: 240px minmax(0, 1fr)
+    gap: 40px
+    align-items: start
+
+  .hero-poster img
+    width: 100%
+    aspect-ratio: 2 / 3
+    object-fit: cover
+    border-radius: $radius
+
+  .hero-body
+    max-width: 68ch
+    padding-top: 8px
+
+  .hero-kicker
+    color: $subtitle
+    font-weight: 600
+    margin-bottom: 8px
+
+  .hero h1
+    margin-bottom: 6px
+    font-size: clamp(30px, 4.6vw, 52px)
+    font-weight: 700
+    letter-spacing: -0.025em
+    a:hover
+      color: $subtitle
+
+  .hero-original
+    color: $muted
+
+  .hero-description
+    display: -webkit-box
+    -webkit-line-clamp: 4
+    -webkit-box-orient: vertical
+    overflow: hidden
+    margin-top: 20px
+    color: rgba($text, .86)
+
+  // one tile per episode: the broadcast so far
+  .hero-strip
+    display: flex
+    flex-wrap: wrap
+    gap: 4px
+    margin-top: 24px
+    list-style: none
+    li
+      display: grid
+      place-items: center
+      width: 30px
+      height: 30px
+      border: 1px dashed $line
+      border-radius: 4px
+      color: $muted
+      font: 600 12px/1 $font-display
+    li.aired
+      border: 1px solid $subtitle
+      color: $subtitle
+
+  .hero-actions
+    margin-top: 28px
+
+  .btn-primary
+    +btn_primary
+    min-height: 46px
+    padding: 10px 22px
+    font-size: 16px
+
+  // ---------- continue watching ----------
+
+  .continue-list
+    display: grid
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr))
+    gap: 12px
+
+  .continue-item
+    display: flex
+    gap: 14px
+    align-items: center
+    padding: 10px
+    border-radius: $radius
+    background: $panel
+    transition: background-color .15s
+    img
+      flex: none
+      width: 56px
+      aspect-ratio: 2 / 3
+      object-fit: cover
+      border-radius: 4px
+    &:hover
+      background: $panel-raised
+      .continue-title
+        color: $subtitle
+
+  .continue-text
+    display: flex
+    flex-direction: column
+    min-width: 0
+    flex: 1
+
+  .continue-title
+    overflow: hidden
+    white-space: nowrap
+    text-overflow: ellipsis
+    font-weight: 600
+
+  .continue-meta
+    color: $muted
+    font-size: 13px
+
+  // ---------- news ----------
+
+  .news-list
+    list-style: none
+    max-width: 760px
+    border-top: 1px solid $line
+
+  .news-row
+    display: grid
+    grid-template-columns: 150px minmax(0, 1fr)
+    gap: 16px
+    padding: 14px 0
+    border-bottom: 1px solid $line
+    time
+      color: $muted
+      font-size: 14px
+      padding-top: 2px
+    span
+      font-weight: 500
+    &:hover span
+      color: $subtitle
+
+  .empty-note
+    color: $muted
+
+  @media screen and (max-width: 760px)
+    .hero
+      grid-template-columns: 120px minmax(0, 1fr)
+      gap: 20px
+    .hero-description
+      -webkit-line-clamp: 3
+    .home-section
+      margin-top: 48px
+
+  @media screen and (max-width: 520px)
+    .hero
+      grid-template-columns: 1fr
+    .hero-poster
+      display: none
+    .news-row
+      grid-template-columns: 1fr
+      gap: 2px

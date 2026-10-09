@@ -1,17 +1,20 @@
-- if user.user_rates.where(status: status).count == 0
-  div.nothing
-    | Ничего нет
+- rates = user.user_rates.includes('anime').where(status: status).order('animes.russian asc')
+- if rates.empty?
+  p.nothing В этом списке пока пусто. Отмечайте серии на странице тайтла — они появятся здесь.
 - else
   table.anime-list
     thead
-      th Название
-      th Оценка
-      th Эпизоды
-      th Тип
+      tr
+        th Название
+        th Тип
+        th Прогресс
     tbody
-      - user.user_rates.includes('anime').where(status: status).order('animes.russian asc').each do |a|
+      - rates.each do |a|
         tr
-          td.anime-name #{link_to a.anime.russian, anime_path(a.anime)}
-          td 0
-          td #{a.episodes} / #{a.anime.episodes}
-          td #{a.anime.kind_text}
+          td.anime-name = link_to a.anime.russian.presence || a.anime.name, anime_path(a.anime)
+          td.anime-kind = anime_kind_label(a.anime)
+          td.anime-progress
+            span #{a.episodes} / #{a.anime.episodes.positive? ? a.anime.episodes : '?'}
+            - if a.anime.episodes.positive?
+              span.air-bar aria-hidden="true"
+                span.air-bar-fill style="width: #{[a.episodes * 100 / a.anime.episodes, 100].min}%"

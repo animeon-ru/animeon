@@ -1,14 +1,19 @@
-h1 #{@t}
-- if user_signed_as_admin?
-  .new_anime
-    = link_to 'Добавить аниме',  new_anime_path
-  .new_anime
-    = link_to 'Добавить аниме с шикимори',  new_from_shikimori_animes_path
-.animes-card-block
-  - @animes.each do |anime|
-    = link_to anime, class: "anime-card card"
-      = image_tag "#{anime.poster_url(:mini)}"
-      .card-body
-        span #{anime_name_substr(anime.russian)}
-.pagination
-  ==pagy_nav(@pagy)
+.catalog-head
+  h1
+    - if params[:name].present?
+      | Поиск: «#{params[:name]}»
+    - elsif params[:status] == 'ongoing'
+      | Онгоинги
+    - else
+      | Каталог аниме
+  - if user_signed_as_admin?
+    .admin-actions
+      = link_to 'Добавить аниме', new_anime_path, class: 'btn'
+      = link_to 'Добавить с Шикимори', new_from_shikimori_animes_path, class: 'btn'
+- if @animes.any?
+  .animes-card-block
+    = render partial: 'animes/card', collection: @animes, as: :anime
+- else
+  p.empty-note Ничего не нашлось. Попробуйте другое название или уберите фильтры.
+nav.pagination aria-label="Страницы каталога"
+  == pagy_nav(@pagy)

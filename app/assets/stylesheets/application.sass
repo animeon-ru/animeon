@@ -12,139 +12,350 @@
 @import mixins/clear
 @import mixins/btn
 
-body
-  font-family: "Nunito", sans-serif
-  font-optical-sizing: auto
-  font-weight: 400
-  font-style: normal
-
-a
-  color: $backgroud-color
-  text-decoration: none
+*, *::before, *::after
+  box-sizing: border-box
 
 *
   margin: 0
   padding: 0
   border: 0
-  color: $backgroud-color
 
-.pagination
-  margin: 0 auto
-  display: table
-
-.pagy
-  & a
-    +btn
-    font-size: 20px
-
-.navbar
-  background: $navbar-color
-  display: block
-  height: 40px
-
-.container
-  background: #242629
-  max-width: 1200px
-  margin: 0 auto
-  padding: 5px
+html
+  color-scheme: dark
+  -webkit-text-size-adjust: 100%
 
 body
-  background: $backgroud-color
+  min-height: 100vh
+  background: $night
+  color: $text
+  font: 400 16px/1.55 $font-body
+  -webkit-font-smoothing: antialiased
 
-.navbar
-  height: 22px
-  padding: 5px 0
+a
+  color: inherit
+  text-decoration: none
+
+img
+  display: block
+  max-width: 100%
+
+h1, h2, h3, h4
+  font-family: $font-display
+  font-weight: 600
+  line-height: 1.2
+  letter-spacing: -0.01em
+  text-wrap: balance
+
+h1
+  font-size: clamp(26px, 4vw, 40px)
+  margin-bottom: 24px
+
+h2
+  font-size: clamp(22px, 3vw, 28px)
+  margin-bottom: 16px
+
+h3
+  font-size: 20px
+  margin: 32px 0 12px
+
+h4
+  font-size: 16px
+
+:focus-visible
+  outline: 2px solid $subtitle
+  outline-offset: 3px
+  border-radius: 2px
+
+::selection
+  background: $subtitle
+  color: $subtitle-ink
+
+.visually-hidden
+  position: absolute
+  width: 1px
+  height: 1px
+  overflow: hidden
+  clip: rect(0 0 0 0)
+  white-space: nowrap
+
+// ---------- header ----------
+
+.site-header
+  position: sticky
+  top: 0
+  z-index: 50
+  background: rgba($night, .92)
+  backdrop-filter: blur(10px)
+  border-bottom: 1px solid $line
+
+.site-header-inner
+  display: flex
+  align-items: center
+  gap: 32px
+  max-width: 1280px
+  height: 64px
+  margin: 0 auto
+  padding: 0 $gutter * 2
+
+.logo
+  font: 800 22px/1 $font-display
+  letter-spacing: -0.04em
+  color: $subtitle
 
 .nav-items
-  display: block
-  width: 100%
-  margin: 0 auto
-  max-width: 1200px
-  +clear_left
-
-.nav-item:first-child
-  clear: left
-
-.nav-item:last-child
-  border: none
+  display: flex
+  gap: 24px
 
 .nav-item
-  float: left
-  padding: 0 9%
-  border-right: white groove 1px
+  position: relative
+  padding: 4px 0
+  color: $muted
+  font-weight: 500
+  transition: color .15s
+  &:hover
+    color: $text
+  &.is-current
+    color: $text
+    &::after
+      content: ''
+      position: absolute
+      left: 0
+      right: 0
+      bottom: -2px
+      height: 2px
+      background: $subtitle
+
+.nav-account
+  margin-left: auto
+
+.account-link
+  color: $text
+
+// ---------- search ----------
+
+.animes-search-block
+  position: relative
+  flex: 0 1 340px
+  margin-left: auto
+  .field
+    display: block
+  .search-ico
+    position: absolute
+    left: 10px
+    top: 50%
+    width: 20px
+    height: 20px
+    transform: translateY(-50%)
+    pointer-events: none
+    &::before
+      content: var(--svg-search)
+      display: block
+      transform: scale(.85)
+      transform-origin: 0 0
+  input
+    width: 100%
+    height: 40px
+    padding: 0 12px 0 38px
+    border: 1px solid $line
+    border-radius: $radius
+    background: $panel
+    color: $text
+    font: inherit
+    font-size: 15px
+    &::placeholder
+      color: $muted
+    &:focus
+      outline: none
+      border-color: $subtitle
+      background: $panel-raised
+
+.search-results
+  position: absolute
+  top: calc(100% + 6px)
+  left: 0
+  right: 0
+  z-index: 100
+  max-height: 70vh
+  overflow-y: auto
+  border-radius: $radius
+  background: $panel-raised
+  &:not(:empty)
+    border: 1px solid $line
+    padding: 4px
+
+.search-result
+  display: flex
+  align-items: center
+  gap: 12px
+  padding: 6px
+  border-radius: 4px
+  img
+    width: 40px
+    aspect-ratio: 2 / 3
+    object-fit: cover
+    border-radius: 3px
+  .search-result-name
+    font-size: 14px
+    line-height: 1.35
+  &:hover
+    background: $line
+
+a:focus-visible .search-result
+  background: $line
+
+// ---------- page frame ----------
+
+.container
+  display: block
+  max-width: 1280px
+  margin: 0 auto
+  padding: 40px $gutter * 2 80px
+
+// generic buttons and forms used by legacy/devise views
+
+.btn
+  +btn
+
+input[type="submit"], button[type="submit"]:not(.button_to button)
+  +btn_primary
+
+input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="file"], textarea, select
+  width: 100%
+  max-width: 480px
+  padding: 9px 12px
+  border: 1px solid $line
+  border-radius: $radius
+  background: $panel
+  color: $text
+  font: inherit
+  &:focus
+    outline: none
+    border-color: $subtitle
+
+input[type="checkbox"], input[type="radio"]
+  margin-right: 8px
+  accent-color: $subtitle
+
+abbr[title]
+  text-decoration: none
+  color: $subtitle
+
+label
+  display: inline-block
+  margin: 12px 0 6px
+  color: $muted
+  font-size: 14px
+
+table
+  width: 100%
+  border-collapse: collapse
+  th
+    padding: 10px 12px
+    color: $muted
+    font-weight: 500
+    font-size: 14px
+    text-align: left
+    border-bottom: 1px solid $line
+  td
+    padding: 12px
+    border-bottom: 1px solid rgba($line, .6)
+
+// ---------- pagination ----------
+
+.pagination
+  margin-top: 48px
+
+.pagy
+  display: flex
+  flex-wrap: wrap
+  gap: 6px
+  & a
+    +btn
+    min-width: 40px
+    padding: 8px 12px
+    font-family: $font-display
+    font-size: 14px
+  & a.current, & a[aria-current]
+    background: $subtitle
+    border-color: $subtitle
+    color: $subtitle-ink
+  & a[aria-disabled="true"]:not(.current)
+    opacity: .4
+    pointer-events: none
 
 #video_quality
   height: 210px
 
+// ---------- responsive ----------
 
-
-.animes-search-block
-  position: relative
-  width: 100%
-  background: $navbar-color
-  max-width: 600px
-  margin: 10px auto
-  & .search-ico
-    position: absolute
-    left: 3px
-    top: 3px
-    &:before
-      content: var(--svg-search)
-  & input
-    padding-left: 30px
-    border: none
-    border-radius: 5px
-    width: 600px
-    height: 30px
-    font-size: 20px
-    &:focus
-      outline: none
-      color: #0e0e0e
-
-.search-results
-  background: $navbar-color
-  color: white
-  z-index: 100
-  width: 600px
-  position: absolute
-
-.search-result
-  padding: 5px
-  display: flex
-  & .search-result-name
-    font-size: 18px
-    margin-left: 5px
-  &:hover
-    background: $container-color
-@media screen and (max-width: 1200px)
-  .nav-item
-    padding: 0 8%
-
-@media screen and (max-width: 1023px)
-  .nav-item:nth-child(3)
-    display: none
-    border: none
-    margin: 0
-  .nav-item
-    padding: 0 9.5%
-  .nav-items
-    max-width: 800px
-
-@media screen and (max-width: 576px)
-  .nav-item
-    padding: 0 7%
-  .nav-items
-    max-width: 450px
+@media screen and (max-width: 900px)
+  .site-header
+    position: static
+  .site-header-inner
+    flex-wrap: wrap
+    height: auto
+    gap: 12px 20px
+    padding: 12px $gutter
   .animes-search-block
-    width: 100%
-    max-width: 360px
-    & input
-      width: 360px
-  .search-results
-    width: 360px
+    order: 5
+    flex: 1 0 100%
+    margin-left: 0
+  .container
+    padding: 24px $gutter 64px
 
-@media screen and (max-width: 440px)
-  .nav-item
-    padding: 0 4%
+@media screen and (max-width: 560px)
+  .logo
+    font-size: 19px
+  .nav-account
+    order: 2
   .nav-items
-    max-width: 350px
+    order: 3
+    flex: 1 0 100%
+    gap: 20px
+    overflow-x: auto
+  .nav-item
+    font-size: 15px
+    white-space: nowrap
+
+// ---------- devise: sign in / sign up / password ----------
+
+.p-sessions, .p-registrations, .p-passwords, .p-confirmations, .p-unlocks
+  .container
+    max-width: 440px
+  form
+    margin-top: 8px
+  .input
+    display: flex
+    flex-direction: column
+  .input.boolean
+    flex-direction: row
+    align-items: center
+    gap: 8px
+    label
+      margin: 0
+  input[type="text"], input[type="email"], input[type="password"]
+    max-width: none
+  .hint
+    margin-top: 4px
+    color: $muted
+    font-size: 13px
+  .error
+    margin-top: 4px
+    color: $danger
+    font-size: 13px
+  .form-actions
+    margin-top: 24px
+    input[type="submit"], button
+      width: 100%
+      min-height: 46px
+  .auth-links
+    display: flex
+    flex-direction: column
+    gap: 8px
+    margin-top: 24px
+    padding-top: 20px
+    border-top: 1px solid $line
+    a
+      color: $muted
+      &:hover
+        color: $subtitle

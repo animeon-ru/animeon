@@ -1,11 +1,12 @@
-- if current_user.id == @user.id
-  h1 Ваш список аниме
-- else
-  h1 Список аниме пользователя #{@user.username}
+- own = user_signed_in? && current_user.id == @user.id
+h1 = own ? 'Мои списки' : "Списки #{@user.username}"
 - type = params[:list_type].present? ? params[:list_type] : 'completed'
 
-- %i[planned watching completed].each do |i|
-  - active = (i.to_s == type) ? 'active' : ''
-  = link_to "#{t("activerecord.attributes.user_rate.statuses.anime.#{i}")} (#{@user.user_rates.where(status: i.to_sym).count})", anime_user_list_path(list_type: i), class: "type-choose #{active}"
+nav.list-tabs aria-label="Списки"
+  - %i[watching planned completed].each do |i|
+    - active = i.to_s == type
+    = link_to anime_user_list_path(list_type: i), class: "type-choose #{'active' if active}", 'aria-current': (active ? 'page' : nil)
+      = t("activerecord.attributes.user_rate.statuses.anime.#{i}")
+      span.tab-count = @user.user_rates.where(status: i.to_sym).count
 
 = render partial: 'lists/list', locals: {type: 'anime', user: @user, status: type.to_sym}

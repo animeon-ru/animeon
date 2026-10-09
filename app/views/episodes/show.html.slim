@@ -1,21 +1,33 @@
-= link_to anime_path(@episode.anime)
-  h2 [
+- anime = @episode.anime
+.episode-head
+  = link_to anime.russian.presence || anime.name, anime_path(anime), class: "episode-back"
+  h1[
     class="anime-name"
-    anime_id="#{@episode.anime.id}"
-    user_rate_id="#{user_signed_in? ? @user_rate.id : 0}"
+    anime_id="#{anime.id}"
+    user_rate_id="#{@user_rate&.id || 0}"
     episode_number="#{@episode.episode_number}"
-  ] #{@episode.anime.russian} / #{@episode.anime.name} - Серия #{@episode.episode_number}
+  ] Серия #{@episode.episode_number}
+  - if anime.episodes.positive?
+    p.episode-of из #{anime.episodes}
+
 .video_block
-  h4 Выберите озвучку:
-  .video_choose
-    - @episode.video.where(status: 2).each do |v|
-      p.video_choose_button [
-        class="btn ep"
-        video_id=v.id
-      ] Озвучка #{v.fandub.name} ~ #{v.views} #{i18n_i 'view', v.views}
-  .anime-video-player[
-    id="player"
-  ]
+  - videos = @episode.video.where(status: 2).includes(:fandub)
+  - if videos.any?
+    .video_choose role="group" aria-label="Озвучка"
+      span.video_choose_label Озвучка
+      - videos.each do |v|
+        button.video_choose_button[
+          type="button"
+          video_id=v.id
+        ]
+          span.fandub-name = v.fandub.name
+          span.fandub-views #{v.views} #{i18n_i 'view', v.views}
+    .anime-video-player[
+      id="player"
+    ]
+      p.player-hint Выберите озвучку, чтобы начать просмотр
+  - else
+    p.empty-note Для этой серии пока нет готовых озвучек. Загляните позже или выберите другую серию.
   javascript:
     function PlayerjsEvents(event, id, info) {
         if (event === "quartile") {
@@ -42,28 +54,28 @@
             }
         }
     }
-.buttons
-  - if  @episode.episode_number > 1
-    = link_to 'Предыдущая серия', anime_episode_path(id: @episode.previous_episode.id), class: "btn btn-outline-danger ep"
-  - else
-    = link_to 'Предыдущая серия', nil, class: "btn btn-outline-danger ep"
-  - if @episode.episode_number < @episode.max_episode
-    = link_to 'Следующая серия', anime_episode_path(id: @episode.next_episode.id), class: "btn btn-outline-success ep"
-  - else
-    = link_to 'Просмотренно', anime_episode_path(id: @episode.id, watched: @episode.episode_number), class: "btn btn-outline-success ep"
-  - if user_signed_in? && (current_user.role == 'admin' || current_user.role == 'uploader')
-    = link_to "Редактировать видео", edit_anime_episode_video_path(episode_id: @episode.id, id: 1), class: "btn btn-outline-info admin"
-    = link_to "Добавить видео", new_anime_episode_video_path(episode_id: @episode.id), class: "btn btn-outline-info admin add_video"
-- unless @episode.video.empty?
-  h3
-    | Загрузчики
-    - users = []
-    - @episode.video.each do |v|
-      - users.push User.find(v.user_id)
-    - users.uniq.each do |user|
-      .uploader
-        = link_to user
-          = image_tag(user.avatar.url, size: '40x40', class: "uploader_avatar")
-          p
-            | #{user.username}
 
+nav.buttons aria-label="Переход между сериями"
+  - if @episode.episode_number > 1
+    = link_to "Серия #{@episode.episode_number - 1}", anime_episode_path(id: @episode.previous_episode.id), class: "ep ep-prev"
+  - else
+    span.ep.ep-prev.is-disabled Это первая серия
+  - if @episode.episode_number < @episode.max_episode
+    = link_to "Серия #{@episode.episode_number + 1}", anime_episode_path(id: @episode.next_episode.id), class: "ep ep-next"
+  - elsif user_signed_in?
+    = link_to 'Отметить просмотренным', anime_episode_path(id: @episode.id, watched: @episode.episode_number), class: "ep ep-next"
+  - else
+    span.ep.ep-next.is-disabled Это последняя серия
+  - if user_signed_in? && (current_user.role == 'admin' || current_user.role == 'uploader')
+    .admin-actions
+      = link_to "Редактировать видео", edit_anime_episode_video_path(episode_id: @episode.id, id: 1), class: "tool-link admin"
+      = link_to "Добавить видео", new_anime_episode_video_path(episode_id: @episode.id), class: "tool-link admin add_video"
+
+- unless @episode.video.empty?
+  section.uploaders
+    h2 Загрузили
+    .uploader-list
+      - User.where(id: @episode.video.map(&:user_id).uniq).each do |user|
+        = link_to user, class: "uploader"
+          = image_tag(user.avatar.url, size: '32x32', class: "uploader_avatar", alt: "")
+          span = user.username

@@ -14,6 +14,8 @@ $(document).on('turbolinks:load', () => {
 
   $('.video_choose_button').on('click', function (e) {
     let id = $(e.currentTarget).attr('video_id')
+    $('.video_choose_button').removeClass('is-active').attr('aria-pressed', 'false')
+    $(e.currentTarget).addClass('is-active').attr('aria-pressed', 'true')
     $.ajax({
       url: '/api/videos/' + id + '',
       type: 'GET',

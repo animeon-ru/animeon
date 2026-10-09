@@ -1,12 +1,59 @@
-.p-news-show
-  .news-block
-    padding: 5px
-    p
-      font-size: 18px
-      margin-top: 10px
-  .user-block
+@import '../../vars'
+
+.p-news-index, .p-news-show, .p-news-new
+  .container
+    max-width: 760px
+
+.p-news-index
+  .news-head
     display: flex
-    span
-      margin-left: 5px
-      font-size: 20px
-      font-weight: bold
+    align-items: baseline
+    justify-content: space-between
+    gap: 16px
+  .news-item
+    padding: 24px 0
+    border-top: 1px solid $line
+    time
+      color: $muted
+      font-size: 14px
+    h2
+      margin: 4px 0 8px
+      font-size: 22px
+      a:hover
+        color: $subtitle
+    p
+      color: rgba($text, .82)
+  .empty-note
+    color: $muted
+
+.p-news-show
+  .news-back
+    color: $muted
+    &::before
+      content: '‹ '
+    &:hover
+      color: $subtitle
+  h1
+    margin: 12px 0 16px
+  .news-meta
+    display: flex
+    align-items: center
+    gap: 16px
+    padding-bottom: 24px
+    margin-bottom: 24px
+    border-bottom: 1px solid $line
+    color: $muted
+    font-size: 14px
+  .user-block
+    display: inline-flex
+    align-items: center
+    gap: 8px
+    color: $text
+    font-weight: 600
+    img
+      border-radius: 50%
+      object-fit: cover
+  .news-body p
+    margin-bottom: 1em
+    font-size: 17px
+    line-height: 1.7

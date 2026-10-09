@@ -1,8 +1,15 @@
+@import '../vars'
+
 =text_info
   .text_info
-    width: 100%
-    padding: 3px
-    background: #36393c
-    margin-bottom: 10px
-    border-left: 10px solid #a7acb1
-    box-sizing: border-box
+    display: flex
+    align-items: baseline
+    justify-content: space-between
+    gap: 16px
+    margin: 0 0 16px
+    font: 600 22px/1.25 $font-display
+    letter-spacing: -0.01em
+    a, span
+      color: $text
+    a:hover
+      color: $subtitle

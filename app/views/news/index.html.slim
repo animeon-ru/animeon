@@ -1,8 +1,14 @@
-h1 Все новости
-- if user_signed_as_admin?
-  = link_to 'Создать новость', new_news_path
+.news-head
+  h1 Новости
+  - if user_signed_as_admin?
+    = link_to 'Написать новость', new_news_path, class: 'btn'
 
-.news-list
-  - @news.each do |n|
-    = link_to "#{n.title}", news_path(id: n.id)
-    p #{n.body}
+- if @news.any?
+  .news-list
+    - @news.each do |n|
+      article.news-item
+        time datetime=n.created_at.iso8601 = l(n.created_at.to_date, format: :long)
+        h2 = link_to n.title, news_path(id: n.id)
+        p = truncate(n.body, length: 280)
+- else
+  p.empty-note Новостей пока нет.

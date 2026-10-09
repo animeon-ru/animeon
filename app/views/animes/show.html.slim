@@ -1,105 +1,122 @@
-h2 #{@animes.russian} / #{@animes.name}
+- episodes = @animes.episode.order(episode_number: :asc).to_a
+- watched_count = @user_rate.present? ? @user_rate.episodes : 0
+- next_episode = episodes.find { |e| e.episode_number > watched_count } || episodes.first
+- genres = Genre.where(id: @animes.genres)
+- studios = Studio.where(id: @animes.studio_ids)
+- description = plain_description(@animes)
+
 .anime_page
-  .anime_img_box
-    .text_info
-      span Фото
-    div.anime_img
-      = image_tag @animes.poster_url
-      = link_to '', edit_anime_url(params[:id]), class: "edit_anime", title: 'Редактировать'
+  aside.anime_img_box
+    .anime_img
+      = image_tag @animes.poster_url, alt: "Постер: #{@animes.russian}"
+    .anime-tools
+      = link_to 'Редактировать', edit_anime_url(params[:id]), class: "tool-link"
       - if user_signed_as_admin? && @animes.next_episode? != 0
-        = link_to '', new_anime_episode_path(anime_id: @animes.id), class: "add_episode", title: 'Добавить эпизод'
+        = link_to 'Добавить серию', new_anime_episode_path(anime_id: @animes.id), class: "tool-link"
       - if user_signed_as_admin? && @animes.shiki_id.present?
-        = link_to '', "https://shikimori.one/animes/#{@animes.shiki_id}", class: "to_shiki", target: "_blank", title: 'Аниме на шикимори'
+        = link_to 'Открыть на Шикимори', "https://shikimori.one/animes/#{@animes.shiki_id}", class: "tool-link", target: "_blank", rel: "noopener"
+
+    - if user_signed_in? && @user_rate.present?
+      section.user-status aria-label="Ваш прогресс"
+        p.user-status-line
+          | Ваш статус:
+          =< link_to @user_rate.status_name, anime_user_list_path(list_type: @user_rate.status, user_id: current_user)
+        .episode-counter
+          = button_to '−', anime_decrement_episode_path(anime_id: @animes.id), class: "counter-btn", title: 'Убрать просмотренную серию', 'aria-label': 'Убрать просмотренную серию'
+          span.counter-value
+            strong = @user_rate.episodes
+            |  из #{@animes.episodes.positive? ? @animes.episodes : '?'}
+          = button_to '+', anime_increment_episode_path(anime_id: @animes.id), class: "counter-btn", title: 'Отметить серию просмотренной', 'aria-label': 'Отметить серию просмотренной'
+        .status-actions
+          - if @user_rate.status == 'known'
+            = button_to 'Запланировать', anime_user_status_path(anime_id: @animes.id, status: 'planned'), class: "status-btn"
+          - if @user_rate.status != 'completed'
+            = button_to 'Отметить просмотренным', anime_user_status_path(anime_id: @animes.id, status: 'completed'), class: "status-btn"
+
   .anime_info_box
-    .text_info
-      = link_to 'Информация', anime_information_path(@animes)
-    .anime_info
+    h1.anime-title = @animes.russian.presence || @animes.name
+    - if @animes.russian.present? && @animes.name.present?
+      p.anime-original = @animes.name
+
+    dl.anime_info
       - if @animes.status.present?
         .line
-          span.key #{Anime.human_attribute_name(:status)}
-          = link_to animes_path(status: @animes.status)
-            span.value.link  - #{@animes.status_text}
-      - if @animes.kind.present?
+          dt = Anime.human_attribute_name(:status)
+          dd = link_to @animes.status_text, animes_path(status: @animes.status)
+      - if anime_kind_label(@animes)
         .line
-          span.key #{Anime.human_attribute_name(:kind)}
-          = link_to animes_path(kind: @animes.kind)
-            span.value.link  - #{@animes.kind_text}
-      - if @animes.status == :ongoing.to_s
+          dt = Anime.human_attribute_name(:kind)
+          dd = link_to anime_kind_label(@animes), animes_path(kind: @animes.kind)
+      - if @animes.episodes.positive?
         .line
-          span.key #{Anime.human_attribute_name(:episodes)}
-          span.value  - #{@animes.episodes_aired} / #{@animes.episodes}
-      - if @animes.status == :released.to_s
-        .line
-          span.key #{Anime.human_attribute_name(:episodes)}
-          span.value  - #{@animes.episodes}
-      - if @animes.genres != []
-        .line
-          span.key #{Anime.human_attribute_name(:genres)} -
-          - @animes.genres.each do |g|
-            - genre = Genre.find(g)
-            = link_to animes_path(genres: genre.name)
-              span.value.link  #{genre.russian}
-      - if @animes.age_rating.present?
-        .line
-          span.key #{Anime.human_attribute_name(:age_rating)}
-          span.value  - #{@animes.age_rating_text}
+          dt = Anime.human_attribute_name(:episodes)
+          dd
+            - if @animes.status == 'ongoing'
+              | #{@animes.episodes_aired} из #{@animes.episodes}
+            - else
+              = @animes.episodes
       - if @animes.duration.present?
         .line
-          span.key #{Anime.human_attribute_name(:duration)}
-          span.value  - #{humanize_minutes(@animes.duration)}
+          dt = Anime.human_attribute_name(:duration)
+          dd = humanize_minutes(@animes.duration)
+      - if @animes.age_rating.present? && @animes.age_rating != 'none'
+        .line
+          dt = Anime.human_attribute_name(:age_rating)
+          dd = @animes.age_rating_text
+      - if @animes.user_rating.present? && @animes.user_rating.positive?
+        .line
+          dt = Anime.human_attribute_name(:user_rating)
+          dd = @animes.user_rating
       - if @animes.franchise.present?
         .line
-          span.key #{Anime.human_attribute_name(:franchise)}
-          = link_to animes_path(franchise: @animes.franchise)
-            span.value.link  - #{@animes.franchise.capitalize.gsub('_', ' ')}
-      - if @animes.user_rating.present?
+          dt = Anime.human_attribute_name(:franchise)
+          dd = link_to @animes.franchise.capitalize.gsub('_', ' '), animes_path(franchise: @animes.franchise)
+      - if studios.any?
         .line
-          span.key #{Anime.human_attribute_name(:user_rating)}
-          span.value  - #{@animes.user_rating}
-      - if @animes.studio_ids != []
-        .text_info.studio
-          span Студия
-        - if @animes.studio_ids.count < 2
-          - studio = Studio.find(@animes.studio_ids.first)
-          = link_to animes_path(studio: studio.id)
-            - if studio.image_file_name.nil?
-              .studio_img
-                span.link #{studio.name}
-            - else
-              .studio_img
-                = image_tag studio.image.expiring_url(3600)
-        - else
-          - @animes.studio_ids.each do |studio_id|
-            - studio = Studio.find(studio_id.to_i)
-            = link_to animes_path(studio: studio_id)
-              .studio_img
-                span.link #{studio.name}
+          dt = Anime.human_attribute_name(:studio_ids)
+          dd
+            - studios.each do |studio|
+              = link_to animes_path(studio: studio.id), class: "studio_img"
+                - if studio.image_file_name.present?
+                  = image_tag studio.image.expiring_url(3600), alt: studio.name
+                - else
+                  = studio.name
 
-      - if user_signed_in?
-        .text_info.user_status
-          span Статус пользователя
-        .line
-          span.key #{Anime.human_attribute_name(:episodes_watched)}
-          span.value  - #{@user_rate.episodes} / #{@animes.episodes}
-        .line
-          span.key #{Anime.human_attribute_name(:user_status)}
-          = link_to anime_user_list_path(list_type: @user_rate.status, user_id: current_user)
-            span.value.link  - #{@user_rate.status_name}
-        - if user_signed_in?
-          = button_to '', anime_increment_episode_path(anime_id: @animes.id), class: "add_episode", title: 'Добавить просмотренную серию'
-          = button_to '', anime_decrement_episode_path(anime_id: @animes.id), class: "remove_episode", title: 'Убрать просмотренную серию'
-          - if @user_rate.status == 'known'
-            = button_to '', anime_user_status_path(anime_id: @animes.id, status: 'planned'), class: "to_planned", title: 'Запланировать'
-          - if @user_rate.status != 'completed'
-            = button_to '', anime_user_status_path(anime_id: @animes.id, status: 'completed'), class: "to_completed", title: 'Просмотрено'
-  .watch
-    .text_info
-      span Смотреть #{@animes.russian}
-    .episodes_list
-      - @animes.episode.order(episode_number: :asc).each do |e|
-        - if !@user_rate.present?
-          = link_to "Серия #{e.episode_number}", anime_episode_url(anime_id: @animes.id, id: e.id), class: "btn btn-outline-light anime_episode"
-        - elsif  @user_rate.episodes >= e.episode_number
-          = link_to "Серия #{e.episode_number}", anime_episode_url(anime_id: @animes.id, id: e.id), class: "btn btn-outline-light anime_episode episode_watched"
-        - else
-          = link_to "Серия #{e.episode_number}", anime_episode_url(anime_id: @animes.id, id: e.id), class: "btn btn-outline-light anime_episode"
+    - if genres.any?
+      ul.genres aria-label=Anime.human_attribute_name(:genres)
+        - genres.each do |genre|
+          li = link_to genre.russian, animes_path(genres: genre.name)
+
+    - if next_episode
+      .watch-cta
+        = link_to anime_episode_url(anime_id: @animes.id, id: next_episode.id), class: "btn-primary"
+          - if watched_count.positive? && next_episode.episode_number > watched_count
+            | Продолжить с #{next_episode.episode_number} серии
+          - else
+            | Смотреть #{next_episode.episode_number} серию
+
+    section.watch aria-labelledby="episodes-title"
+      h2#episodes-title Серии
+      - if episodes.any? || @animes.episodes.positive?
+        ol.episodes_list
+          - episodes.each do |e|
+            - watched = e.episode_number <= watched_count
+            li
+              = link_to e.episode_number, anime_episode_url(anime_id: @animes.id, id: e.id), class: "anime_episode #{'episode_watched' if watched}", 'aria-label': "Серия #{e.episode_number}#{watched ? ', просмотрена' : ''}"
+          - last_uploaded = episodes.last&.episode_number || 0
+          - if @animes.episodes > last_uploaded && @animes.episodes <= 200
+            - ((last_uploaded + 1)..@animes.episodes).each do |n|
+              li
+                span.anime_episode.episode_missing aria-label="Серия #{n}, пока нет на сайте" = n
+        ul.episodes-legend
+          - if user_signed_in?
+            li.legend-watched Просмотрено
+          li.legend-available Можно смотреть
+          li.legend-missing Пока нет на сайте
+      - else
+        p.empty-note Серии ещё не загружены.
+
+    - if description.present?
+      section.anime-description aria-labelledby="description-title"
+        h2#description-title Описание
+        p = description

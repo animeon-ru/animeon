@@ -1,134 +1,244 @@
-@import '../../mixins/clear'
+@import '../../vars'
 @import '../../mixins/btn'
-@import '../../mixins/icons.scss'
-@import '../../mixins/text_info'
 
 .p-animes-show
-  +text_info
-  .key
-    color: #8c9095
-    font-weight: bold
+  .anime_page
+    display: grid
+    grid-template-columns: 280px minmax(0, 1fr)
+    gap: 48px
+    align-items: start
 
-  .studio_img img
-    margin: 0 auto
-    display: block
-    max-width: 250px
-
-  .episodes_list
-    width: 100%
-    max-width: 1300px
-    margin: 0 auto
-    display: inline-block
+  // ---------- poster column ----------
 
   .anime_img_box
-    clear: left
-    float: left
-    margin: 5px
-    width: 20%
-    border-radius: 5px
-
-  .watch
-    float: left
-    margin: 5px
-    width: 50%
-
-  .anime_episode
-    margin: 5px
-    width: 18%
-    min-width: 38px
-    display: inline-block
-    text-align: center
-    +btn
-
-  .episode_watched
-    border-color: #0f5132
-    background: #01472e
-
-  .anime_page
-    +clear_left
-
-  .user_status
-    margin-top: 10px
+    position: sticky
+    top: 96px
 
   .anime_img img
     width: 100%
+    aspect-ratio: 2 / 3
+    object-fit: cover
+    border-radius: $radius
+    background: $panel
+
+  .anime-tools
+    display: flex
+    flex-wrap: wrap
+    gap: 4px 16px
+    margin-top: 12px
+    font-size: 14px
+
+  .tool-link
+    color: $muted
+    text-decoration: underline
+    text-decoration-color: $line
+    text-underline-offset: 3px
+    &:hover
+      color: $text
+
+  .user-status
+    margin-top: 24px
+    padding: 16px
+    border-radius: $radius
+    background: $panel
+
+  .user-status-line
+    color: $muted
+    font-size: 14px
+    a
+      color: $text
+      font-weight: 600
+      &:hover
+        color: $subtitle
+
+  .episode-counter
+    display: flex
+    align-items: center
+    justify-content: space-between
+    gap: 12px
+    margin-top: 12px
+
+  .counter-btn
+    +btn
+    width: 40px
+    padding: 0
+    font: 500 20px/1 $font-display
+
+  .counter-value
+    color: $muted
+    strong
+      color: $text
+      font: 700 22px/1 $font-display
+
+  .status-actions
+    display: flex
+    flex-direction: column
+    gap: 8px
+    margin-top: 16px
+    form, .status-btn
+      width: 100%
+
+  .status-btn
+    +btn
+
+  // ---------- main column ----------
 
   .anime_info_box
-    margin: 5px
-    width: 25%
-    float: left
+    min-width: 0
 
-  .edit_anime
-    margin-top: 5px
-    width: 50%
-    &:after
-      content: var(--svg-edit)
-  .button_to
+  .anime-title
+    margin-bottom: 6px
+    font-size: clamp(28px, 4.4vw, 48px)
+    font-weight: 700
+    letter-spacing: -0.025em
+
+  .anime-original
+    color: $muted
+    font-size: 17px
+
+  .anime_info
+    display: grid
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr))
+    gap: 20px 24px
+    margin-top: 32px
+    padding: 20px 0
+    border-top: 1px solid $line
+    border-bottom: 1px solid $line
+    dt
+      color: $muted
+      font-size: 13px
+    dd
+      margin-top: 2px
+      font-weight: 600
+    dd a:hover
+      color: $subtitle
+
+  .studio_img
     display: inline-block
-  .add_episode
-    background: none
-    cursor: pointer
-    &:before
-      content: var(--svg-plus)
-  .remove_episode
-    background: none
-    cursor: pointer
-    &:before
-      content: var(--svg-minus)
-  .to_planned
-    background: none
-    cursor: pointer
-    &:before
-      content: var(--svg-plan)
-  .to_completed
-    background: none
-    cursor: pointer
-    &:before
-      content: var(--svg-success)
-  .link:hover
-    color: #868686
-  .to_shiki
-    &:before
-      content: var(--svg-shiki)
+    margin-right: 10px
+    img
+      max-height: 28px
+      max-width: 140px
+      filter: grayscale(1) brightness(1.6)
 
-@media screen and (max-width: 1023px)
-  .p-animes-show
-    .anime_img_box
-      clear: left
-      float: left
-      width: 45%
-      margin-bottom: 15px
-      & .text_info, .anime_img
-        width: 75%
-    .watch
-      float: left
-      width: 100%
-    .anime_episode
-      width: 30%
-    .text_info
-      width: 100%
-    .anime_info_box
-      float: left
-      width: 50%
-    .edit_anime
-      width: 75%
+  .genres
+    display: flex
+    flex-wrap: wrap
+    gap: 8px
+    margin-top: 20px
+    list-style: none
+    a
+      display: inline-block
+      padding: 4px 12px
+      border: 1px solid $line
+      border-radius: 999px
+      color: $muted
       font-size: 14px
+      &:hover
+        border-color: $subtitle
+        color: $subtitle
 
-@media screen and (max-width: 576px)
- .p-animes-show
-  .anime_img_box
-    float: none
-    width: 100%
-    & .text_info, .anime_img
-      width: 350px
-  .anime_episode
-    width: 40%
+  .watch-cta
+    margin-top: 32px
+
+  .btn-primary
+    +btn_primary
+    min-height: 48px
+    padding: 10px 24px
+    font-size: 16px
+
+  // ---------- episode grid: the signature element ----------
+
   .watch
-    float: none
-    width: 100%
-  .anime_info_box
-    float: none
-    width: 100%
-    margin-bottom: 15px
-  .edit_anime
-    width: 45%
+    margin-top: 48px
+
+  .episodes_list
+    display: grid
+    grid-template-columns: repeat(auto-fill, 52px)
+    gap: 6px
+    list-style: none
+
+  .anime_episode
+    display: grid
+    place-items: center
+    aspect-ratio: 1
+    border: 1px solid $line
+    border-radius: 4px
+    background: $panel
+    font: 600 15px/1 $font-display
+    transition: border-color .15s, color .15s, background-color .15s
+  a.anime_episode:hover
+    border-color: $subtitle
+    color: $subtitle
+
+  .episode_watched
+    border-color: $subtitle
+    background: $subtitle
+    color: $subtitle-ink
+  a.episode_watched:hover
+    background: lighten($subtitle, 8%)
+    color: $subtitle-ink
+
+  .episode_missing
+    border-style: dashed
+    background: none
+    color: rgba($muted, .55)
+
+  .episodes-legend
+    display: flex
+    flex-wrap: wrap
+    gap: 6px 20px
+    margin-top: 14px
+    list-style: none
+    color: $muted
+    font-size: 13px
+    li::before
+      content: ''
+      display: inline-block
+      width: 10px
+      height: 10px
+      margin-right: 8px
+      border-radius: 2px
+      vertical-align: -1px
+    .legend-watched::before
+      background: $subtitle
+    .legend-available::before
+      border: 1px solid $muted
+      background: $panel
+    .legend-missing::before
+      border: 1px dashed $muted
+
+  .anime-description
+    margin-top: 56px
+    max-width: 68ch
+    p
+      color: rgba($text, .88)
+      line-height: 1.65
+      white-space: pre-line
+
+  .empty-note
+    color: $muted
+
+  @media screen and (max-width: 900px)
+    .anime_page
+      grid-template-columns: 200px minmax(0, 1fr)
+      gap: 32px
+
+  @media screen and (max-width: 640px)
+    .anime_page
+      grid-template-columns: 1fr
+    .anime_img_box
+      position: static
+      display: grid
+      grid-template-columns: 120px minmax(0, 1fr)
+      gap: 0 16px
+    .anime_img
+      grid-row: span 2
+    .anime-tools
+      margin-top: 0
+    .user-status
+      grid-column: 1 / -1
+    .episodes_list
+      grid-template-columns: repeat(auto-fill, minmax(44px, 1fr))
+    .anime_info
+      grid-template-columns: repeat(2, minmax(0, 1fr))

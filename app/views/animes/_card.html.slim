@@ -1,0 +1,11 @@
+= link_to anime, class: "anime-card"
+  .anime-card-poster
+    = image_tag anime.poster_url(:mini), alt: "", loading: "lazy"
+  span.anime-card-title = anime.russian.presence || anime.name
+  - if anime.status == 'ongoing' && anime.episodes.positive?
+    span.anime-card-meta #{anime.episodes_aired} из #{episodes_text(anime.episodes)}
+    span.air-bar aria-hidden="true"
+      span.air-bar-fill style="width: #{[anime.episodes_aired * 100 / anime.episodes, 100].min}%"
+  - else
+    span.anime-card-meta
+      = [anime_kind_label(anime), (episodes_text(anime.episodes) if anime.episodes > 1)].compact.join(', ')

@@ -1,25 +1,77 @@
+@import '../../vars'
+
 .p-lists-anime
+  .container
+    max-width: 960px
+
+  .list-tabs
+    display: flex
+    flex-wrap: wrap
+    gap: 4px
+    margin-bottom: 24px
+    border-bottom: 1px solid $line
+
+  .type-choose
+    display: inline-flex
+    align-items: center
+    gap: 8px
+    margin-bottom: -1px
+    padding: 10px 14px
+    border-bottom: 2px solid transparent
+    color: $muted
+    font-weight: 500
+    &:hover
+      color: $text
+    &.active
+      border-color: $subtitle
+      color: $text
+
+  .tab-count
+    min-width: 22px
+    padding: 1px 7px
+    border-radius: 999px
+    background: $panel-raised
+    color: $muted
+    font-size: 12px
+    text-align: center
+
   .anime-list
-    width: 100%
-  .anime-name
-    text-decoration: underline
-  .type-choose:after
-    content: '/'
-    margin: 0 5px
-    display: inline-block
-  .type-choose:nth-child(4)
-    &:after
-      content: ' '
-  .type-choose:hover
-    text-decoration: underline!important
+    td
+      vertical-align: middle
+    tbody tr:hover
+      background: $panel
+
+  .anime-name a
+    font-weight: 600
+    &:hover
+      color: $subtitle
+
+  .anime-kind
+    color: $muted
+    font-size: 14px
+
+  .anime-progress
+    width: 160px
+    font: 600 14px/1 $font-display
+
+  .air-bar
+    display: block
+    height: 3px
+    margin-top: 8px
+    border-radius: 2px
+    background: $line
+    overflow: hidden
+
+  .air-bar-fill
+    display: block
+    height: 100%
+    background: $subtitle
+
   .nothing
-    color: #dde3e9
-  .active
-    color: #dde3e9
-    text-decoration: underline!important
-  tr
-    height: 25px
-    & td
-      text-align: center
-      &:nth-child(1)
-        text-align: inherit
+    color: $muted
+
+  @media screen and (max-width: 560px)
+    .anime-kind, th:nth-child(2)
+      display: none
+    .anime-progress
+      width: 96px

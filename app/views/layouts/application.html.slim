@@ -3,6 +3,7 @@ html
   head
     title = @title
     meta name="viewport" content="width=device-width,initial-scale=1"
+    meta name="theme-color" content="#15142a"
     meta charset="UTF-8"
     meta content="website" property="og:type"
     meta content="Animeon" property="og:site_name"
@@ -15,7 +16,7 @@ html
     link rel="preconnect" href="https://mc.yandex.ru"
     link rel="preconnect" href="https://fonts.googleapis.com"
     link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""
-    link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet"
+    link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..700&family=Unbounded:wght@500..800&display=swap" rel="stylesheet"
     = csrf_meta_tags
     = csp_meta_tag
     = stylesheet_pack_tag :application, media: 'all', data: { 'turbolinks-track' => 'reload'  }
@@ -26,27 +27,30 @@ html
     class="#{controller_classes}"
     user_id="#{user_signed_in? ? user_id = current_user.id : 0}"
   ]
-    .navbar
-      .nav-items
-        .nav-item
-          = link_to "Главная", root_path
-        .nav-item
-          = link_to "Аниме", animes_path
-        .nav-item
-          = link_to "Онгоинги", animes_path(status: :ongoing)
-        .nav-item
-          - if user_signed_in?
-            = link_to "Ваш профиль", user_path(id: current_user.id)
-          - else
-            = link_to "Войти в профиль", new_user_session_path
-    .container
-      .animes-search-block
-        label.field
-          span.search-ico
-          input.search-field[
-            placeholder="Поиск..."
-          ]
+    header.site-header
+      .site-header-inner
+        = link_to root_path, class: 'logo', 'aria-label': 'Animeon, на главную'
+          | animeon
+        nav.nav-items aria-label="Основная навигация"
+          = link_to "Каталог", animes_path, class: "nav-item #{'is-current' if controller_name == 'animes' && params[:status].blank?}"
+          = link_to "Онгоинги", animes_path(status: :ongoing), class: "nav-item #{'is-current' if params[:status] == 'ongoing'}"
+          = link_to "Новости", news_index_path, class: "nav-item #{'is-current' if controller_name == 'news'}"
+        .animes-search-block
+          label.field
+            span.search-ico aria-hidden="true"
+            span.visually-hidden Поиск аниме
+            input.search-field[
+              type="search"
+              placeholder="Найти аниме"
+              autocomplete="off"
+            ]
           .search-results
+        .nav-account
+          - if user_signed_in?
+            = link_to current_user.username.presence || "Профиль", user_path(id: current_user.id), class: "nav-item account-link"
+          - else
+            = link_to "Войти", new_user_session_path, class: "nav-item account-link"
+    main.container
       = yield
-      - if Rails.env.production?
-        = render partial: 'layouts/metrika'
+    - if Rails.env.production?
+      = render partial: 'layouts/metrika'

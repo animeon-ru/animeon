@@ -1,26 +1,78 @@
-.ongoing_box
+- if @hero
+  section.hero aria-labelledby="hero-title"
+    = link_to @hero, class: "hero-poster", tabindex: -1, 'aria-hidden': true
+      = image_tag @hero.poster_url, alt: ""
+    .hero-body
+      p.hero-kicker = @hero_label
+      h1#hero-title
+        = link_to (@hero.russian.presence || @hero.name), @hero
+      - if @hero.russian.present? && @hero.name.present?
+        p.hero-original = @hero.name
+      - description = plain_description(@hero)
+      - if description.present?
+        p.hero-description = description
+      - if @hero.episodes.positive? && @hero.episodes <= 52
+        ol.hero-strip aria-label="Вышло #{@hero.episodes_aired} из #{episodes_text(@hero.episodes)}"
+          - (1..@hero.episodes).each do |n|
+            li class=(n <= @hero.episodes_aired || @hero.status == 'released' ? 'aired' : nil) = n
+      .hero-actions
+        = link_to "Открыть тайтл", @hero, class: "btn-primary"
+
+- if @continue.present?
+  section.home-section
+    .text_info
+      h2 Продолжить просмотр
+    .continue-list
+      - @continue.each do |rate|
+        - anime = rate.anime
+        - next unless anime
+        = link_to anime, class: "continue-item"
+          = image_tag anime.poster_url(:mini), alt: "", loading: "lazy"
+          span.continue-text
+            span.continue-title = anime.russian.presence || anime.name
+            span.continue-meta
+              - if anime.episodes.positive?
+                | Просмотрено #{rate.episodes} из #{anime.episodes}
+              - else
+                | Просмотрено #{episodes_text(rate.episodes)}
+            - if anime.episodes.positive?
+              span.air-bar aria-hidden="true"
+                span.air-bar-fill style="width: #{[rate.episodes * 100 / anime.episodes, 100].min}%"
+
+- if @animes.any?
+  section.home-section.ongoing_box
+    .text_info
+      h2 Онгоинги
+      = link_to 'Все онгоинги', animes_path(status: 'ongoing'), class: "section-link"
+    .ongoing_cards
+      = render partial: 'animes/card', collection: @animes, as: :anime
+
+- if @animes_with_video.any?
+  section.home-section.animes_with_video_box
+    .text_info
+      h2 С озвучкой на сайте
+      = link_to 'Весь список', animes_path(model: 'video'), class: "section-link"
+    .ongoing_cards
+      = render partial: 'animes/card', collection: @animes_with_video, as: :anime
+
+- if @popular.present?
+  section.home-section
+    .text_info
+      h2 Лучшее по оценкам
+      = link_to 'Весь каталог', animes_path, class: "section-link"
+    .ongoing_cards
+      = render partial: 'animes/card', collection: @popular.drop(1), as: :anime
+
+section.home-section.news_box
   .text_info
-    = link_to 'Онгоинги', animes_path(status: 'ongoing')
-  .ongoing_cards
-    - @animes.each do |anime|
-      = link_to anime, class: "anime-card card"
-        = image_tag anime.poster_url(:mini)
-        .card-body
-          span #{anime_name_substr(anime.russian)}
-.animes_with_video_box
-  .text_info
-    = link_to 'Аниме которые можно посмотреть', animes_path(model: 'video')
-  .ongoing_cards
-    - @animes_with_video.each do |anime|
-      = link_to anime, class: "anime-card card"
-        = image_tag anime.poster_url(:mini)
-        .card-body
-          span #{anime_name_substr(anime.russian)}
-.news_box
-  .text_info
-    = link_to 'Все новости', news_index_path
-  .news_cards
-    - @news.each do |n|
-      = link_to n, class: "news-card card"
-        .card-body
-          span #{n.title}
+    h2 Новости
+    = link_to 'Все новости', news_index_path, class: "section-link"
+  - if @news.any?
+    ul.news-list
+      - @news.each do |n|
+        li
+          = link_to n, class: "news-row"
+            time datetime=n.created_at.iso8601 = l(n.created_at.to_date, format: :long)
+            span = n.title
+  - else
+    p.empty-note Новостей пока нет.

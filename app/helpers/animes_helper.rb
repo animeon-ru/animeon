@@ -28,6 +28,28 @@ module AnimesHelper
     text
   end
 
+  def episodes_text(count)
+    mod10 = count % 10
+    mod100 = count % 100
+    word = if mod10 == 1 && mod100 != 11
+             'серия'
+           elsif (2..4).cover?(mod10) && !(12..14).cover?(mod100)
+             'серии'
+           else
+             'серий'
+           end
+    "#{count} #{word}"
+  end
+
+  def anime_kind_label(anime)
+    anime.kind.present? && anime.kind != 'none' ? anime.kind_text : nil
+  end
+
+  # Shikimori descriptions contain BB-code like [character=1]Name[/character]
+  def plain_description(anime)
+    anime.description.to_s.gsub(/\[\/?[^\]]+\]/, '').strip
+  end
+
   def anime_name_substr(name)
     name.length > 20 ? "#{name[0..20]}..." : name
   end
